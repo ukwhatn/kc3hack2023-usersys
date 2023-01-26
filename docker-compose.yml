@@ -10,7 +10,7 @@ services:
       - ./web:/app
       - ./db:/user_modules/db
     ports:
-      - 3000:8080
+      - 60101:8080
     env_file:
       - ./envs/oauth_github.env
       - ./envs/oauth_discord.env
