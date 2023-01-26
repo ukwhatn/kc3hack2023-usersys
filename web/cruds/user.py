@@ -1,5 +1,6 @@
 # append db path
 import sys
+from typing import Any
 
 sys.path.append("/user_modules")
 
@@ -48,7 +49,11 @@ def create_user_from_discord(
     ))
 
 
-def update_user(user: Users):
+def update_user(
+        user: Users,
+        parameters: dict[str, Any]
+):
     with get_db_session() as session:
+        session.query(Users).filter(Users.id == user.id).update(parameters)
         session.commit()
         return user

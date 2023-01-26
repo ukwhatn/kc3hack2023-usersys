@@ -130,13 +130,17 @@ def post_user_info(
                                            "csrf_token": _csrf_token})
 
     # ユーザー更新
-    user.name_first = name_first
-    user.name_last = name_last
-    user.name_first_kana = name_first_kana
-    user.name_last_kana = name_last_kana
-    user.email = email
-    user.univ_name = univ_name
-    user.univ_year = univ_year
-    user.circle_name = circle_name
-    user_crud.update_user(user)
+    user_crud.update_user(
+        user,
+        {
+            "name_first": name_first,
+            "name_last": name_last,
+            "name_first_kana": name_first_kana,
+            "name_last_kana": name_last_kana,
+            "email": email,
+            "univ_name": univ_name,
+            "univ_year": univ_year,
+            "circle_name": circle_name
+        }
+    )
     return RedirectResponse(url="/?success=edit_user_info", status_code=status.HTTP_303_SEE_OTHER)

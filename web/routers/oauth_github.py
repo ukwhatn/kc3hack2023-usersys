@@ -93,9 +93,14 @@ def callback(request: Request, code: str):
         if user is None:
             return RedirectResponse("/logout")
 
-        user.github_user_id = int(github_id)
-        user.github_user_name = github_name
-        user_crud.update_user(user)
+        # 更新
+        user_crud.update_user(
+            user,
+            {
+                "github_user_id": int(github_id),
+                "github_user_name": github_name,
+            }
+        )
     # user_idがsessに保存されていない = これまでログインしていない
     else:
         # Discordログインに遷移

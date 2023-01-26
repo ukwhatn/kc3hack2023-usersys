@@ -90,10 +90,14 @@ def callback(request: Request, code: str):
         if user is None:
             return RedirectResponse("/logout")
 
-        user.discord_user_id = discord_id
-        user.discord_user_name = discord_name
-        user.discord_avatar_hash = avatar_hash
-        user_crud.update_user(user)
+        user_crud.update_user(
+            user,
+            {
+                "discord_user_id": discord_id,
+                "discord_user_name": discord_name,
+                "discord_avatar_hash": avatar_hash,
+            }
+        )
 
     # user_idがsessに保存されていない = これまでログインしていない
     else:

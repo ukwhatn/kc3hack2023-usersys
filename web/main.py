@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +7,10 @@ from fastapi.templating import Jinja2Templates
 
 from cruds import session as session_util
 from routers import root, oauth_github, oauth_discord, user
+
+sys.path.append("/user_modules")
+
+from db.engine import get_session as get_db_session, close_session as close_db_session
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,6 +39,9 @@ app.include_router(
 
 @app.middleware("http")
 async def session_handler(request: Request, call_next):
+    # db session start
+    get_db_session()
+
     # 有効期限切れのSessionを削除
     session_util.remove_expired_sessions()
 
@@ -63,5 +71,8 @@ async def session_handler(request: Request, call_next):
     # 新規作成していたらsess_keyをcookieに格納
     if is_new:
         response.set_cookie("sess_key", session.id, max_age=60 * 60)
+
+    # db session close
+    close_db_session()
 
     return response
