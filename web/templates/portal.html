@@ -107,7 +107,7 @@
         {% else %}
             <div class="panel-heading">
                 <img class="user-icon"
-                     src="https://cdn.discordapp.com/avatars/{{ user.discord_user_id }}/{{ user.discord_avatar_hash }}">
+                     src="{% if user.discord_user_avatar_hash == None %}https://cdn.discordapp.com/embed/avatars/0.png{% else %}https://cdn.discordapp.com/avatars/{{ user.discord_user_id }}/{{ user.discord_avatar_hash }}{% endif %}">
                 {{ user.discord_user_name }}
             </div>
             <div class="panel-body">
