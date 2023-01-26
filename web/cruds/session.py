@@ -5,47 +5,52 @@ from datetime import datetime, timedelta
 sys.path.append("/user_modules")
 
 from db.models import Session
-from db.engine import session
+from db.engine import get_session as get_db_session
 
 import secrets
 
 
 def remove_expired_sessions():
-    session.query(Session).filter(Session.created_at < datetime.utcnow() - timedelta(hours=1)).delete()
-    session.commit()
+    with get_db_session() as session:
+        session.query(Session).filter(Session.created_at < datetime.utcnow() - timedelta(hours=1)).delete()
+        session.commit()
 
 
 def get_session(session_key: str):
-    return session.query(Session).filter_by(id=session_key).first()
+    with get_db_session() as session:
+        return session.query(Session).filter_by(id=session_key).first()
 
 
 def create_session():
-    session_instance = Session(id=secrets.token_urlsafe(), value=None)
+    with get_db_session() as session:
+        session_instance = Session(id=secrets.token_urlsafe(), value=None)
 
-    session.add(session_instance)
-    session.commit()
+        session.add(session_instance)
+        session.commit()
 
-    return session_instance
+        return session_instance
 
 
 def update_session(session_key: str, value: dict | None = None):
-    if get_session(session_key) is None:
-        return False
+    with get_db_session() as session:
+        if get_session(session_key) is None:
+            return False
 
-    session.query(Session).filter_by(id=session_key).update({"value": value})
-    session.commit()
+        session.query(Session).filter_by(id=session_key).update({"value": value})
+        session.commit()
 
-    return True
+        return True
 
 
 def delete_session(session_key: str):
-    if get_session(session_key) is None:
-        return False
+    with get_db_session() as session:
+        if get_session(session_key) is None:
+            return False
 
-    session.query(Session).filter_by(id=session_key).delete()
-    session.commit()
+        session.query(Session).filter_by(id=session_key).delete()
+        session.commit()
 
-    return True
+        return True
 
 
 def create_csrf_token():

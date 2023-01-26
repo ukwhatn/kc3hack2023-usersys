@@ -4,29 +4,34 @@ import sys
 sys.path.append("/user_modules")
 
 from db.models import Users
-from db.engine import session
+from db.engine import get_session as get_db_session
 
 
 def get_user(user_id: int):
-    return session.query(Users).filter(Users.id == user_id).first()
+    with get_db_session() as session:
+        return session.query(Users).filter(Users.id == user_id).first()
 
 
 def get_user_by_email(email: str):
-    return session.query(Users).filter(Users.email == email).first()
+    with get_db_session() as session:
+        return session.query(Users).filter(Users.email == email).first()
 
 
 def get_user_by_github_user_id(github_user_id: int):
-    return session.query(Users).filter(Users.github_user_id == github_user_id).first()
+    with get_db_session() as session:
+        return session.query(Users).filter(Users.github_user_id == github_user_id).first()
 
 
 def get_user_by_discord_user_id(discord_user_id: int):
-    return session.query(Users).filter(Users.discord_user_id == discord_user_id).first()
+    with get_db_session() as session:
+        return session.query(Users).filter(Users.discord_user_id == discord_user_id).first()
 
 
 def create_user(user: Users):
-    session.add(user)
-    session.commit()
-    return user
+    with get_db_session() as session:
+        session.add(user)
+        session.commit()
+        return user
 
 
 def create_user_from_discord(
@@ -44,5 +49,6 @@ def create_user_from_discord(
 
 
 def update_user(user: Users):
-    session.commit()
-    return user
+    with get_db_session() as session:
+        session.commit()
+        return user

@@ -1,6 +1,7 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
 
 username = os.getenv("DB_USERNAME")
 password = os.getenv("DB_PASSWORD")
@@ -11,7 +12,14 @@ charset_type = "utf8mb4"
 
 engine = create_engine(
     f"mysql+pymysql://{username}:{password}@{host}:{port}/{database}?charset={charset_type}"
-    )
+)
 
-SessionClass = sessionmaker(engine)  # セッションを作るクラスを作成
-session = SessionClass()
+SessionClass = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    expire_on_commit=False
+)  # セッションを作るクラスを作成
+
+
+def get_session():
+    return SessionClass()
