@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  web:
+    container_name: "web"
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/web/Dockerfile
+    volumes:
+      - ./web:/app
+      - ./db:/user_modules/db
+    ports:
+      - 3000:8080
+    env_file:
+      - ./envs/oauth_github.env
+      - ./envs/oauth_discord.env
+      - ./envs/db.env

@@ -1,0 +1,156 @@
+{% extends "application.html" %}
+
+{% block styles %}
+    <style>
+        .panel {
+            margin: 1rem auto;
+            width: 90%;
+            max-width: 400px;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        .panel .service-icon {
+            display: block;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+        }
+
+        .panel .panel-heading {
+            font-size: 1.25em;
+            line-height: 2em;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .panel .panel-heading .user-icon {
+            display: inline-block;
+            width: 2em;
+            border-radius: 50%;
+        }
+
+        .panel .panel-body a.btn {
+            transition: 0.25s;
+        }
+
+        .panel .panel-body a.btn:hover {
+            transform: scale(1.05);
+        }
+
+        .discord-panel {
+            background-color: #4f5df3;
+            color: white;
+        }
+
+        .github-panel {
+            background-color: #333;
+            color: white;
+        }
+
+        .info-panel {
+            background-color: #ced4da;
+            color: #212529;
+        }
+
+        .panel.discord-panel.noneUser ~ .panel {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            font-weight: bold;
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            max-width: 300px;
+        }
+    </style>
+{% endblock %}
+
+{% block page_desc %}
+    以下の内容を上から順に入力してください。
+{% endblock %}
+
+{% block body %}
+    {% if success != None %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ success }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+    {% if error != None %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ error }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <div class="panel discord-panel {% if user == None %}noneUser{% endif %}">
+        <i class="fab fa-discord service-icon"></i>
+        {% if user == None %}
+            <div class="panel-heading">
+                未認証
+            </div>
+            <div class="panel-body">
+                <a href="/oauth2/discord" class="btn btn-light">Discordでログイン</a>
+            </div>
+        {% else %}
+            <div class="panel-heading">
+                <img class="user-icon"
+                     src="https://cdn.discordapp.com/avatars/{{ user.discord_user_id }}/{{ user.discord_avatar_hash }}">
+                {{ user.discord_user_name }}
+            </div>
+            <div class="panel-body">
+                <a href="/oauth2/discord" class="btn btn-light">Discordアカウントを変更</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="panel github-panel">
+        <i class="fab fa-github service-icon"></i>
+        {% if user == None or user.github_user_id == None %}
+            <div class="panel-heading">
+                未認証
+            </div>
+            <div class="panel-body">
+                <a href="/oauth2/github" class="btn btn-light">GitHubでログイン</a>
+            </div>
+        {% else %}
+            <div class="panel-heading">
+                <img class="user-icon"
+                     src="https://avatars.githubusercontent.com/u/{{ user.github_user_id }}">
+                {{ user.github_user_name }}
+            </div>
+            <div class="panel-body">
+                <a href="/oauth2/github" class="btn btn-light">GitHubアカウントを変更</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="panel info-panel">
+        <i class="fas fa-info-circle service-icon"></i>
+        {% if user == None or user.name_first == None %}
+            <div class="panel-heading">
+                未登録
+            </div>
+            <div class="panel-body">
+                <a href="/user/info" class="btn btn-light">ユーザ情報を登録</a>
+            </div>
+        {% else %}
+            <div class="panel-heading">
+                {{ user.name_first }} {{ user.name_last }}
+            </div>
+            <div class="panel-body">
+                <a href="/user/info" class="btn btn-light">ユーザ情報を変更</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        history.replaceState('', '', new URL(window.location.href).pathname);
+    </script>
+{% endblock %}

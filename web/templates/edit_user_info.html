@@ -1,0 +1,130 @@
+{% extends "application.html" %}
+
+{% block title %}
+    ユーザ情報登録
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .alert-danger {
+            margin: 1rem auto;
+        }
+        .alert-danger ul {
+            font-size: 1em;
+            font-weight: 400;
+            color: black;
+            margin: 0 auto;
+        }
+    </style>
+{% endblock %}
+
+{% block page_desc %}
+    あなたの情報を入力してください
+{% endblock %}
+
+{% block body %}
+    {% if errors != None and errors != [] %}
+        <div class="col-md-8 alert alert-danger" role="alert">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-8" style="margin: 0 auto">
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+                <label for="name_first" class="form-label">氏名 <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input
+                            id="name_first" name="name_first" type="text" class="form-control" placeholder="氏(漢字)"
+                            {% if user.name_first != None %}value="{{ user.name_first }}"{% endif %}>
+                    <input id="name_last" name="name_last" type="text" class="form-control" placeholder="名(漢字)"
+                           {% if user.name_last != None %}value="{{ user.name_last }}"{% endif %}>
+                </div>
+
+                <label for="name_first_kana" class="form-label">氏名(フリガナ) <span
+                        class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input id="name_first_kana" name="name_first_kana" type="text" class="form-control"
+                           placeholder="氏(カナ)"
+                           {% if user.name_first_kana != None %}value="{{ user.name_first_kana }}"{% endif %}
+                    >
+                    <input id="name_last_kana" name="name_last_kana" type="text" class="form-control"
+                           placeholder="名(カナ)"
+                           {% if user.name_last_kana != None %}value="{{ user.name_last_kana }}"{% endif %}
+                    >
+                </div>
+
+                <label for="email" class="form-label">メールアドレス <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                           {% if user.email != None %}value="{{ user.email }}"{% endif %}
+                    >
+                </div>
+
+                <label for="univ_name" class="form-label">所属大学 <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="univ_name" name="univ_name" placeholder="〇〇大学(正式名称で入力)"
+                           {% if user.univ_name != None %}value="{{ user.univ_name }}"{% endif %}
+                    >
+                </div>
+
+                <label for="univ_year" class="form-label">学年 <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <select class="form-select" id="univ_year" name="univ_year">
+                        <option value="0" {% if user.univ_year == None %}selected{% endif %} hidden>学年を選択してください
+                        </option>
+                        {% for year in [1, 2, 3, 4] %}
+                            <option value="{{ year }}"
+                                    {% if user.univ_year == year %}selected{% endif %}>
+                                学部{{ year }}年
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <label for="circle_name" class="form-label">所属団体 <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    {% set circles = [
+                        "大阪大学 大阪大学コンピュータクラブ(OUCC)",
+                        "大阪工業大学 HxSコンピュータ部",
+                        "大阪工業大学 デザイン思考実践研究部",
+                        "関⻄大学 電気通信工学研究会(DTK)",
+                        "関西学院大学 機巧堂",
+                        "関西学院大学 プログラミング研究会(Tech.Uni)",
+                        "近畿大学 電子計算機研究会(CSG)",
+                        "近畿大学 KINDAI Info-Tech HUB",
+                        "京都大学 京大マイコンクラブ(KMC)",
+                        "京都産業大学 電子計算機応用部(C.A.C)",
+                        "甲南大学 甲南大学文化会KSWL 技術部門",
+                        "同志社大学 電気情報研究会(DENX)",
+                        "立命館大学 情報理工学部プロジェクト団体 RiG++",
+                        "立命館大学 情報理工学部プロジェクト団体 RiPPro",
+                        "立命館大学 情報理工学部プロジェクト団体 Ri-one",
+                        "立命館大学 情報理工学部プロジェクト団体 RiST",
+                        "立命館大学 立命館コンピュータクラブ(RCC)",
+                        "立命館大学/同志社大学 watnow",
+                        "和歌山大学 クリエゲーム制作プロジェクト(CGP)",
+                        "同志社大学/同志社女子大学 Do'er",
+                        "その他"
+                    ] %}
+                    <select class="form-select" id="circle_name" name="circle_name">
+                        <option value="" {% if user.circle_name == None %}selected{% endif %} hidden>団体を選択してください</option>
+                        {% for circle in circles %}
+                            <option
+                                    value="{{ circle }}"
+                                    {% if user.circle_name == circle %}selected{% endif %}
+                            >{{ circle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">送信</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
