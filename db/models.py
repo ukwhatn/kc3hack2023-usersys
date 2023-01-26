@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import marshmallow.fields as ma_fields
 from marshmallow import Schema
@@ -26,7 +26,6 @@ class Session(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    expired_at = Column(DateTime, default=datetime.utcnow() + timedelta(hours=1), nullable=False)
 
     def get_value(self, none_if_not_exist: bool = True):
         if self.value is None:

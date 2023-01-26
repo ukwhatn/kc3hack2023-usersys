@@ -1,6 +1,6 @@
 # append db path
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 
 sys.path.append("/user_modules")
 
@@ -11,7 +11,7 @@ import secrets
 
 
 def remove_expired_sessions():
-    session.query(Session).filter(Session.expired_at < datetime.utcnow()).delete()
+    session.query(Session).filter(Session.created_at < datetime.utcnow() - timedelta(hours=1)).delete()
     session.commit()
 
 
