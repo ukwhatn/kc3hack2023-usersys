@@ -79,7 +79,7 @@ def join_guild(
 def start_auth():
     return RedirectResponse(
         f"https://discord.com/api/oauth2/authorize?client_id={os.getenv('DISCORD_CLIENT_ID')}"
-        f"&redirect_uri={os.getenv('DISCORD_REDIRECT_URI')}&response_type=code&scope=identify email"
+        f"&redirect_uri={os.getenv('DISCORD_REDIRECT_URI')}&response_type=code&scope=identify email guilds.join"
     )
 
 
@@ -120,6 +120,13 @@ def callback(request: Request, code: str):
                 "discord_user_name": discord_name,
                 "discord_avatar_hash": avatar_hash,
             }
+        )
+
+        # 新しいアカウントをDiscordに参加
+        join_guild(
+            token=token,
+            user_id=discord_id,
+            roles=[os.getenv("DISCORD_SUPPORTER_ROLE")] if user.is_supporter else None
         )
 
     # user_idがsessに保存されていない = これまでログインしていない
