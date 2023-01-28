@@ -28,7 +28,12 @@ class UserManage(commands.Cog):
     def get_all_users_in_db() -> list[Users]:
         return user_crud.get_users()
 
-    @tasks.loop(seconds=10)
+    async def add_role(self, member: discord.Member, role: discord.Role):
+        if role not in member.roles:
+            await member.add_roles(role)
+            self.logger.info(f"Added {member.name} to {role.name}")
+
+    @tasks.loop(minutes=1)
     async def update_users(self):
 
         if self.guild is None:
@@ -44,14 +49,33 @@ class UserManage(commands.Cog):
 
         for member in members:
 
-            correct_user_nane = f"{member.name_first} {member.name_last}"
-            if member.is_admin:
-                correct_user_nane += "_KC3運営"
+            if member.is_supporter:
+                continue
 
             if member.discord_user_id is not None:
                 discord_user = await self.guild.fetch_member(member.discord_user_id)
                 if discord_user is not None:
-                    if discord_user.nick != correct_user_nane:
+
+                    if member.name_first is None or member.name_last is None:
+                        await self.add_role(
+                            discord_user,
+                            self.guild.get_role(int(os.getenv("DISCORD_NOT_REGISTERED_ROLE")))
+                        )
+                        correct_user_nane = None
+
+                    else:
+                        correct_user_nane = f"{member.name_first} {member.name_last}"
+
+                    if member.is_admin:
+                        correct_user_nane += "_KC3運営"
+
+                    if member.is_supporter:
+                        await self.add_role(
+                            discord_user,
+                            self.guild.get_role(int(os.getenv("DISCORD_SUPPORTER_ROLE")))
+                        )
+
+                    if correct_user_nane is not None and discord_user.nick != correct_user_nane:
                         await discord_user.edit(nick=correct_user_nane)
                         logging.info(f"Updated {discord_user.name}'s nickname to {correct_user_nane}")
 
@@ -69,13 +93,20 @@ class UserManage(commands.Cog):
                                     is_correct_team_role_exist = True
 
                         if not is_correct_team_role_exist:
-                            await discord_user.add_roles(roles[team_name])
-                            logging.info(f"Added {team_name} to {discord_user.name}")
+                            await self.add_role(discord_user, roles[team_name])
 
                 else:
                     await bot_config.NOTIFY_TO_OWNER(
                         self.bot,
                         f"User {member.name_first} {member.name_last} is not in the server")
+
+        members_discord_id = [member.discord_user_id for member in members]
+        for discord_user in self.guild.members:
+            if discord_user.id not in members_discord_id:
+                await self.add_role(
+                    discord_user,
+                    self.guild.get_role(int(os.getenv("DISCORD_NOT_MEMBER_ROLE")))
+                )
 
 
 def setup(bot):
