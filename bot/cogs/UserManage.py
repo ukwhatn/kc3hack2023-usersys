@@ -54,7 +54,7 @@ class UserManage(commands.Cog):
 
             if member.discord_user_id is not None:
                 discord_user = await self.guild.fetch_member(member.discord_user_id)
-                if discord_user is not None:
+                if discord_user is not None and not discord_user.bot:
 
                     if member.name_first is None or member.name_last is None:
                         await self.add_role(
@@ -102,11 +102,12 @@ class UserManage(commands.Cog):
 
         members_discord_id = [member.discord_user_id for member in members]
         for discord_user in self.guild.members:
+            if discord_user.bot:
+                continue
             if discord_user.id not in members_discord_id:
-                await self.add_role(
-                    discord_user,
-                    self.guild.get_role(int(os.getenv("DISCORD_NOT_MEMBER_ROLE")))
-                )
+                if self.guild.owner.id != discord_user.id:
+                    await discord_user.kick(reason="Not registered")
+                    self.logger.info(f"Kicked {discord_user.name}")
 
 
 def setup(bot):
