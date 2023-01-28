@@ -70,10 +70,12 @@ def join_guild(
         }
     )
 
+    logging.info(response.json())
+
     if response.status_code in (201, 204):
+        logging.info("Added user to guild.")
         return True
     else:
-        logging.warning(response.json())
         return False
 
 
