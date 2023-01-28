@@ -130,7 +130,7 @@ def callback(request: Request, code: str):
         join_guild(
             token=token,
             user_id=discord_id,
-            roles=[os.getenv("DISCORD_SUPPORTER_ROLE")] if user.is_supporter else None
+            roles=[os.getenv("DISCORD_SUPPORTER_ROLE")] if user.is_supporter else [os.getenv("DISCORD_MEMBER_ROLE")]
         )
 
     # user_idがsessに保存されていない = これまでログインしていない
@@ -164,7 +164,7 @@ def callback(request: Request, code: str):
             join_guild(
                 token=token,
                 user_id=discord_id,
-                roles=[os.getenv("DISCORD_SUPPORTER_ROLE")] if is_supporter else None
+                roles=[os.getenv("DISCORD_SUPPORTER_ROLE")] if is_supporter else [os.getenv("DISCORD_MEMBER_ROLE")]
             )
 
     # sessを更新
