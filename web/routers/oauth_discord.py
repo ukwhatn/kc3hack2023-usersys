@@ -152,7 +152,8 @@ def callback(request: Request, code: str):
             # Discordに参加
             join_guild(
                 token=token,
-                user_id=discord_id
+                user_id=discord_id,
+                roles=[os.getenv("DISCORD_SUPPORTER_ROLE")] if is_supporter else None
             )
 
     # sessを更新
