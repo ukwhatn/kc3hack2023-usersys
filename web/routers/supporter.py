@@ -1,12 +1,13 @@
 import logging
 import re
+import sys
 
 from fastapi import APIRouter, Request, Form, status
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from cruds import session as session_crud
-from cruds import user as user_crud
+sys.path.append("/user_modules")
+from db.cruds import session as session_crud, user as user_crud
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,7 +20,10 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/info")
-def edit_user_data(request: Request):
+def edit_user_data(
+        request: Request,
+        error: str = None
+):
     # セッションバリュー取得
     sess_value = request.state.session.get_value()
 
@@ -38,13 +42,17 @@ def edit_user_data(request: Request):
     if user.is_supporter is False:
         return RedirectResponse(url="/")
 
+    errors = None
+    if error is not None:
+        errors = ["CSRFトークンチェックに失敗しました。再試行してください。"]
+
     # CORSトークン生成・セッションに保存
     csrf_token = session_crud.create_csrf_token()
     sess_value["csrf_token"] = csrf_token
     session_crud.update_session(request.state.session.id, sess_value)
 
     return templates.TemplateResponse("edit_supporter_info.html",
-                                      {"request": request, "user": user, "csrf_token": csrf_token, "errors": None})
+                                      {"request": request, "user": user, "csrf_token": csrf_token, "errors": errors})
 
 
 @router.post("/info")
@@ -59,7 +67,7 @@ def post_user_info(
     sess_value = request.state.session.get_value()
     if sess_value is None or "csrf_token" not in sess_value \
             or sess_value["csrf_token"] != _csrf_token or _csrf_token is None:
-        return RedirectResponse(url="/supporter/info", status_code=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url="/supporter/info?error=csrf_invalid", status_code=status.HTTP_303_SEE_OTHER)
 
     # 未ログインならポータルにリダイレクト
     if sess_value is None or "user_id" not in sess_value:
