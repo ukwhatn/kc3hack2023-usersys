@@ -63,6 +63,10 @@ def join_guild(
             "nick": nick,
             "roles": roles,
             "access_token": token
+        },
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
         }
     )
 
