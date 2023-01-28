@@ -50,6 +50,31 @@ def get_user_data(token: str) -> dict[str, str] | None:
     return response.json()
 
 
+def join_guild(
+        token: str,
+        user_id: str,
+        guild_id: str = os.getenv("DISCORD_GUILD_ID"),
+        nick: str = None,
+        roles: list[str] | None = None
+):
+    response = httpx.put(
+        f"https://discord.com/api/guilds/{guild_id}/members/{user_id}",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+        json={
+            "nick": nick,
+            "roles": roles
+        }
+    )
+
+    if response.status_code in (201, 204):
+        return True
+    else:
+        logging.warning(response.json())
+        return False
+
+
 @router.get("/")
 def start_auth():
     return RedirectResponse(
@@ -123,6 +148,12 @@ def callback(request: Request, code: str):
                 is_supporter=is_supporter
             )
             sess_value["user_id"] = user.id
+
+            # Discordに参加
+            join_guild(
+                token=token,
+                user_id=discord_id
+            )
 
     # sessを更新
     session_crud.update_session(request.state.session.id, sess_value)
