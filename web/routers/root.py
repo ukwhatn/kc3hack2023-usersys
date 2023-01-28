@@ -1,12 +1,13 @@
 import logging
 import os
+import sys
 
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from cruds import session as session_crud
-from cruds import user as user_crud
+sys.path.append("/user_modules")
+from db.cruds import session as session_crud, user as user_crud
 
 logging.basicConfig(level=logging.INFO)
 

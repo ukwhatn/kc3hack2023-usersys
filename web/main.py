@@ -5,12 +5,12 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from cruds import session as session_util
 from routers import root, oauth_github, oauth_discord, user, supporter
 
 sys.path.append("/user_modules")
 
 from db.engine import get_session as get_db_session, close_session as close_db_session
+from db.cruds import session as session_util
 
 logging.basicConfig(level=logging.INFO)
 

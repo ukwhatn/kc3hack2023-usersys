@@ -8,6 +8,11 @@ from db.models import Users
 from db.engine import get_session as get_db_session
 
 
+def get_users():
+    with get_db_session() as session:
+        return session.query(Users).all()
+
+
 def get_user(user_id: int):
     with get_db_session() as session:
         return session.query(Users).filter(Users.id == user_id).first()

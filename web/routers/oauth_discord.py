@@ -1,12 +1,13 @@
 import logging
 import os
+import sys
 
 import httpx
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 
-from cruds import session as session_crud
-from cruds import user as user_crud
+sys.path.append("/user_modules")
+from db.cruds import session as session_crud, user as user_crud
 
 logging.basicConfig(level=logging.INFO)
 
@@ -69,8 +70,6 @@ def join_guild(
             "Content-Type": "application/json",
         }
     )
-
-    logging.info(response.json())
 
     if response.status_code in (201, 204):
         logging.info("Added user to guild.")
