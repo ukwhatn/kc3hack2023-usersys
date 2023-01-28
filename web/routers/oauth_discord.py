@@ -65,7 +65,7 @@ def join_guild(
             "access_token": token
         },
         headers={
-            "Authorization": f"Bearer {os.getenv('DISCORD_BOT_TOKEN')}",
+            "Authorization": f"Bot {os.getenv('DISCORD_BOT_TOKEN')}",
             "Content-Type": "application/json",
         }
     )
