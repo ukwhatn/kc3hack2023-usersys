@@ -12,7 +12,22 @@ services:
     ports:
       - 60101:8080
     env_file:
-      - ./envs/oauth_github.env
-      - ./envs/oauth_discord.env
       - ./envs/db.env
+      - ./envs/discord.env
+      - ./envs/github.env
       - ./envs/secret.env
+    restart: always
+
+  bot:
+    container_name: "bot"
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/bot/Dockerfile
+    volumes:
+      - ./bot:/app
+      - ./db:/user_modules/db
+    env_file:
+      - ./envs/db.env
+      - ./envs/discord.env
+      - ./envs/sentry.env
+    restart: always
