@@ -39,13 +39,17 @@ def create_user_from_discord(
         discord_user_id: int,
         discord_user_name: str,
         discord_avatar_hash: str,
-        email: str
+        email: str,
+        registered_email: str | None = None,
+        is_supporter: bool = False
 ):
     return create_user(Users(
         discord_user_id=discord_user_id,
         discord_user_name=discord_user_name,
         discord_avatar_hash=discord_avatar_hash,
-        email=email
+        email=email,
+        registered_email=registered_email,
+        is_supporter=is_supporter
     ))
 
 

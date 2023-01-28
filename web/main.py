@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from cruds import session as session_util
-from routers import root, oauth_github, oauth_discord, user
+from routers import root, oauth_github, oauth_discord, user, supporter
 
 sys.path.append("/user_modules")
 
@@ -34,6 +34,10 @@ app.include_router(
 
 app.include_router(
     user.router
+)
+
+app.include_router(
+    supporter.router
 )
 
 

@@ -46,7 +46,8 @@ class Users(Base):
     name_first_kana = Column(String(50), nullable=True)
     name_last_kana = Column(String(50), nullable=True)
 
-    email = Column(String(50), nullable=True)
+    email = Column(String(100), nullable=True)
+    registered_email = Column(String(100), nullable=True)
 
     univ_name = Column(String(50), nullable=True)
     univ_year = Column(Integer, nullable=True)
@@ -63,6 +64,7 @@ class Users(Base):
     team_id = Column(String(5), nullable=True)
 
     is_admin = Column(Boolean, default=False)
+    is_supporter = Column(Boolean, default=False)
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

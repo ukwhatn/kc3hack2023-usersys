@@ -78,20 +78,22 @@
 {% endblock %}
 
 {% block page_desc %}
-    以下の内容を上から順に入力してください。
+    以下の内容を上から順に入力してください。<br>
+    Discordアカウントは、以下でログインしたアカウントで自動的に専用サーバーに参加します。<br>
+    アカウントを間違えないよう注意してください。
 {% endblock %}
 
 {% block body %}
     {% if success != None %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-          {{ success }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ success }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endif %}
     {% if error != None %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          {{ error }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endif %}
 
@@ -115,44 +117,67 @@
             </div>
         {% endif %}
     </div>
-    <div class="panel github-panel">
-        <i class="fab fa-github service-icon"></i>
-        {% if user == None or user.github_user_id == None %}
-            <div class="panel-heading">
-                未認証
-            </div>
-            <div class="panel-body">
-                <a href="/oauth2/github" class="btn btn-light">GitHubでログイン</a>
-            </div>
-        {% else %}
-            <div class="panel-heading">
-                <img class="user-icon"
-                     src="https://avatars.githubusercontent.com/u/{{ user.github_user_id }}">
-                {{ user.github_user_name }}
-            </div>
-            <div class="panel-body">
-                <a href="/oauth2/github" class="btn btn-light">GitHubアカウントを変更</a>
-            </div>
-        {% endif %}
-    </div>
-    <div class="panel info-panel">
-        <i class="fas fa-info-circle service-icon"></i>
-        {% if user == None or user.name_first == None %}
-            <div class="panel-heading">
-                未登録
-            </div>
-            <div class="panel-body">
-                <a href="/user/info" class="btn btn-light">ユーザ情報を登録</a>
-            </div>
-        {% else %}
-            <div class="panel-heading">
-                {{ user.name_first }} {{ user.name_last }}
-            </div>
-            <div class="panel-body">
-                <a href="/user/info" class="btn btn-light">ユーザ情報を変更</a>
-            </div>
-        {% endif %}
-    </div>
+    {# is_supporter未設定かつuser未作成か作成済でサポータでない もしくは is_supporterが偽 #}
+    {% if (is_supporter == None and (user == None or user.is_supporter == False)) or is_supporter == False %}
+        <div class="panel github-panel">
+            <i class="fab fa-github service-icon"></i>
+            {% if user == None or user.github_user_id == None %}
+                <div class="panel-heading">
+                    未認証
+                </div>
+                <div class="panel-body">
+                    <a href="/oauth2/github" class="btn btn-light">GitHubでログイン</a>
+                </div>
+            {% else %}
+                <div class="panel-heading">
+                    <img class="user-icon"
+                         src="https://avatars.githubusercontent.com/u/{{ user.github_user_id }}">
+                    {{ user.github_user_name }}
+                </div>
+                <div class="panel-body">
+                    <a href="/oauth2/github" class="btn btn-light">GitHubアカウントを変更</a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="panel info-panel">
+            <i class="fas fa-info-circle service-icon"></i>
+            {% if user == None or user.name_first == None %}
+                <div class="panel-heading">
+                    未登録
+                </div>
+                <div class="panel-body">
+                    <a href="/user/info" class="btn btn-light">ユーザ情報を登録</a>
+                </div>
+            {% else %}
+                <div class="panel-heading">
+                    {{ user.name_first }} {{ user.name_last }}
+                </div>
+                <div class="panel-body">
+                    <a href="/user/info" class="btn btn-light">ユーザ情報を変更</a>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="panel info-panel">
+            <i class="fas fa-info-circle service-icon"></i>
+            {% if user == None or user.name_first == None %}
+                <div class="panel-heading">
+                    未登録
+                </div>
+                <div class="panel-body">
+                    <a href="/supporter/info" class="btn btn-light">企業情報を登録</a>
+                </div>
+            {% else %}
+                <div class="panel-heading">
+                    <span style="font-size: 0.75em">{{ user.name_first }}</span><br>
+                    {{ user.name_last }}
+                </div>
+                <div class="panel-body">
+                    <a href="/supporter/info" class="btn btn-light">企業情報を変更</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <script>
         history.replaceState('', '', new URL(window.location.href).pathname);

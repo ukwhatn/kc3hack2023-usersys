@@ -1,0 +1,67 @@
+{% extends "application.html" %}
+
+{% block title %}
+    ユーザ情報登録
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .alert-danger {
+            margin: 1rem auto;
+        }
+
+        .alert-danger ul {
+            font-size: 1em;
+            font-weight: 400;
+            color: black;
+            margin: 0 auto;
+        }
+    </style>
+{% endblock %}
+
+{% block page_desc %}
+    あなたの情報を入力してください
+{% endblock %}
+
+{% block body %}
+    {% if errors != None and errors != [] %}
+        <div class="col-md-8 alert alert-danger" role="alert">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-8" style="margin: 0 auto">
+            <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+
+                <label for="name_first" class="form-label">企業名 <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input
+                            id="name_first" name="name_first" type="text" class="form-control" placeholder="株式会社〇〇"
+                            {% if user.name_first != None %}value="{{ user.name_first }}"{% endif %}>
+                </div>
+
+                <label for="name_last" class="form-label">ご担当者氏名 <span
+                        class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input
+                            id="name_last" name="name_last" type="text" class="form-control" placeholder="関西 太郎"
+                            {% if user.name_last != None %}value="{{ user.name_last }}"{% endif %}>
+                </div>
+
+                <label for="email" class="form-label">メールアドレス <span class="badge bg-primary">必須</span></label>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com"
+                           {% if user.email != None %}value="{{ user.email }}"{% endif %}
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">送信</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

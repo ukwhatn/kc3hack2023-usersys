@@ -1,4 +1,5 @@
 import logging
+import os
 
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
@@ -25,8 +26,12 @@ def root(
 ):
     session_value = request.state.session.get_value()
     user = None
-    if session_value is not None and "user_id" in session_value:
-        user = user_crud.get_user(session_value["user_id"])
+    is_supporter = False
+    if session_value is not None:
+        if "user_id" in session_value:
+            user = user_crud.get_user(session_value["user_id"])
+        if "is_supporter" in session_value:
+            is_supporter = session_value["is_supporter"]
 
     if success is not None:
         match success:
@@ -34,6 +39,8 @@ def root(
                 success = f"{location}認証に成功しました。"
             case "edit_user_info":
                 success = "ユーザー情報を更新しました。"
+            case "edit_supporter_info":
+                success = "企業情報を更新しました。"
             case _:
                 success = None
 
@@ -47,9 +54,47 @@ def root(
                 error = f"{location}のトークンの取得に失敗しました。"
             case "failed_to_get_data":
                 error = f"{location}のユーザー情報の取得に失敗しました。"
+            case _:
+                error = None
 
     return templates.TemplateResponse("portal.html",
-                                      {"request": request, "user": user, "success": success, "error": error})
+                                      {"request": request, "user": user, "success": success, "error": error,
+                                       "is_supporter": is_supporter})
+
+
+@router.get("/ref")
+def register_ref(
+        request: Request,
+        ref: str | None = None
+):
+    if ref is None:
+        return RedirectResponse("/")
+
+    session_value = request.state.session.get_value(none_if_not_exist=False)
+    session_value["registered_email"] = ref
+    session_crud.update_session(request.state.session.id, session_value)
+
+    return RedirectResponse(f"/")
+
+
+@router.get("/sup")
+def register_ref_for_supporter(
+        request: Request,
+        ref: str | None = None,
+        key: str | None = None
+):
+    if ref is None:
+        return RedirectResponse("/")
+
+    if key is None or key != os.environ.get("SUPPORTER_KEY"):
+        return RedirectResponse("/")
+
+    session_value = request.state.session.get_value(none_if_not_exist=False)
+    session_value["registered_email"] = ref
+    session_value["is_supporter"] = True
+    session_crud.update_session(request.state.session.id, session_value)
+
+    return RedirectResponse(f"/")
 
 
 @router.get("/logout")

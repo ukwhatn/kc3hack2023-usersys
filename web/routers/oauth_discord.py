@@ -47,8 +47,6 @@ def get_user_data(token: str) -> dict[str, str] | None:
         },
     )
 
-    logging.error(response.json())
-
     return response.json()
 
 
@@ -107,11 +105,22 @@ def callback(request: Request, code: str):
             sess_value["user_id"] = user.id
         # Discordアカウントが未登録 = 新しくアカウントを作成してidをsessに保存
         else:
+            registered_email = None
+            is_supporter = False
+            if sess_value is not None:
+                if "registered_email" in sess_value:
+                    registered_email = sess_value["registered_email"]
+                    email = registered_email
+                if "is_supporter" in sess_value:
+                    is_supporter = sess_value["is_supporter"]
+
             user = user_crud.create_user_from_discord(
                 discord_user_id=int(discord_id),
                 discord_user_name=discord_name,
                 discord_avatar_hash=avatar_hash,
                 email=email,
+                registered_email=registered_email,
+                is_supporter=is_supporter
             )
             sess_value["user_id"] = user.id
 

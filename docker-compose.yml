@@ -15,3 +15,4 @@ services:
       - ./envs/oauth_github.env
       - ./envs/oauth_discord.env
       - ./envs/db.env
+      - ./envs/secret.env
