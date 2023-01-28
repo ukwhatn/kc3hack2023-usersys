@@ -30,6 +30,8 @@ def root(
     if session_value is not None:
         if "user_id" in session_value:
             user = user_crud.get_user(session_value["user_id"])
+            if user is None:
+                return RedirectResponse("/logout")
         if "is_supporter" in session_value:
             is_supporter = session_value["is_supporter"]
 
