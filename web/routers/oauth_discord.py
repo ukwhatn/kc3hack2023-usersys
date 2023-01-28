@@ -59,12 +59,10 @@ def join_guild(
 ):
     response = httpx.put(
         f"https://discord.com/api/guilds/{guild_id}/members/{user_id}",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
         json={
             "nick": nick,
-            "roles": roles
+            "roles": roles,
+            "access_token": token
         }
     )
 
