@@ -26,6 +26,23 @@ class UserManage(commands.Cog):
         self.guild = self.bot.get_guild(int(os.getenv("DISCORD_GUILD_ID")))
         self.update_users.start()
 
+    @commands.Cog.listener("on_member_join")
+    async def on_member_join(self, member: discord.Member):
+        if member.bot:
+            return
+
+        dm = await member.create_dm()
+        try:
+            await dm.send(
+                content="",
+                embed=discord.Embed(
+                    title="KC3Hack 2023へようこそ！",
+                    description="まずは、「はじめに」チャンネルを確認してください。"
+                )
+            )
+        except discord.Forbidden:
+            self.logger.warning(f"Failed to send DM to {member.name}")
+
     @staticmethod
     def get_all_users_in_db() -> list[Users]:
         return user_crud.get_users()
