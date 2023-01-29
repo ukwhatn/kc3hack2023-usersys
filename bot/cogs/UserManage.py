@@ -21,6 +21,8 @@ class UserManage(commands.Cog):
 
         self.notified_not_found_users = []
 
+        self.kick_targets = {}
+
     @commands.Cog.listener("on_ready")
     async def on_ready(self):
         self.guild = self.bot.get_guild(int(os.getenv("DISCORD_GUILD_ID")))
@@ -217,8 +219,18 @@ class UserManage(commands.Cog):
                 continue
             if discord_user.id not in members_discord_id:
                 if self.guild.owner.id != discord_user.id:
-                    await discord_user.kick(reason="Not registered")
-                    self.logger.info(f"Kicked {discord_user.name}")
+                    if discord_user.id not in self.kick_targets:
+                        self.kick_targets[discord_user.id] = 1
+                    else:
+                        self.kick_targets[discord_user.id] += 1
+
+                    if self.kick_targets[discord_user.id] >= 4:
+                        await discord_user.kick(reason="Not registered")
+                        self.logger.info(f"Kicked {discord_user.name}")
+                        self.kick_targets.pop(discord_user.id)
+                    else:
+                        self.logger.info(
+                            f"Will kick {discord_user.name} in {4 - self.kick_targets[discord_user.id]} times")
 
 
 def setup(bot):
