@@ -131,7 +131,7 @@ class UserManage(commands.Cog):
                     # 詳細情報登録チェック
                     has_detailed_info = True
                     has_not_detailed_role = self.guild.get_role(int(os.getenv("DISCORD_NOT_REGISTERED_ROLE")))
-                    if member.name_first is None or member.name_last is None:
+                    if (member.name_first is None or member.name_last is None) and not member.is_supporter:
                         has_detailed_info = False
                         await self.add_role(
                             discord_user,
@@ -146,7 +146,7 @@ class UserManage(commands.Cog):
                     # GitHub登録チェック
                     is_not_github_registered_role = self.guild.get_role(
                         int(os.getenv("DISCORD_NOT_GITHUB_REGISTERED_ROLE")))
-                    if member.github_user_id is None:
+                    if member.github_user_id is None and not member.is_supporter:
                         await self.add_role(
                             discord_user,
                             is_not_github_registered_role
